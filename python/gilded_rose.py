@@ -11,6 +11,41 @@ BACKSTAGE_DOUBLE_INCREASE_DAYS = 10
 BACKSTAGE_TRIPLE_INCREASE_DAYS = 5
 
 
+class ItemUpdater:
+    """Updates the sell_in and quality of one item at the end of a day."""
+
+    def __init__(self, item):
+        self.item = item
+
+    def update(self):
+        self.update_quality()
+        self.item.sell_in -= 1
+        if self.item.sell_in < 0:
+            self.update_quality_after_sell_by()
+
+    def update_quality(self):
+        raise NotImplementedError
+
+    def update_quality_after_sell_by(self):
+        raise NotImplementedError
+
+    def increase_quality(self, amount):
+        if self.item.quality < MAX_QUALITY:
+            self.item.quality = min(self.item.quality + amount, MAX_QUALITY)
+
+    def decrease_quality(self, amount):
+        if self.item.quality > MIN_QUALITY:
+            self.item.quality = max(self.item.quality - amount, MIN_QUALITY)
+
+
+class NormalItem(ItemUpdater):
+    def update_quality(self):
+        self.decrease_quality(1)
+
+    def update_quality_after_sell_by(self):
+        self.decrease_quality(1)
+
+
 class GildedRose(object):
 
     def __init__(self, items):
@@ -44,11 +79,7 @@ class GildedRose(object):
                 item.quality = MIN_QUALITY
             return
 
-        if item.quality > MIN_QUALITY:
-            item.quality -= 1
-        item.sell_in -= 1
-        if item.sell_in < 0 and item.quality > MIN_QUALITY:
-            item.quality -= 1
+        NormalItem(item).update()
 
 
 class Item:
