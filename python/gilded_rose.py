@@ -46,6 +46,14 @@ class NormalItem(ItemUpdater):
         self.decrease_quality(1)
 
 
+class AgedBrie(ItemUpdater):
+    def update_quality(self):
+        self.increase_quality(1)
+
+    def update_quality_after_sell_by(self):
+        self.increase_quality(1)
+
+
 class GildedRose(object):
 
     def __init__(self, items):
@@ -60,11 +68,7 @@ class GildedRose(object):
             return
 
         if item.name == AGED_BRIE:
-            if item.quality < MAX_QUALITY:
-                item.quality += 1
-            item.sell_in -= 1
-            if item.sell_in < 0 and item.quality < MAX_QUALITY:
-                item.quality += 1
+            AgedBrie(item).update()
             return
 
         if item.name == BACKSTAGE_PASSES:
