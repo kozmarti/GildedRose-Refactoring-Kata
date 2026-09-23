@@ -54,6 +54,19 @@ class AgedBrie(ItemUpdater):
         self.increase_quality(1)
 
 
+class BackstagePass(ItemUpdater):
+    def update_quality(self):
+        if self.item.sell_in <= BACKSTAGE_TRIPLE_INCREASE_DAYS:
+            self.increase_quality(3)
+        elif self.item.sell_in <= BACKSTAGE_DOUBLE_INCREASE_DAYS:
+            self.increase_quality(2)
+        else:
+            self.increase_quality(1)
+
+    def update_quality_after_sell_by(self):
+        self.item.quality = MIN_QUALITY
+
+
 class GildedRose(object):
 
     def __init__(self, items):
@@ -72,15 +85,7 @@ class GildedRose(object):
             return
 
         if item.name == BACKSTAGE_PASSES:
-            if item.quality < MAX_QUALITY:
-                item.quality += 1
-            if item.sell_in <= BACKSTAGE_DOUBLE_INCREASE_DAYS and item.quality < MAX_QUALITY:
-                item.quality += 1
-            if item.sell_in <= BACKSTAGE_TRIPLE_INCREASE_DAYS and item.quality < MAX_QUALITY:
-                item.quality += 1
-            item.sell_in -= 1
-            if item.sell_in < 0:
-                item.quality = MIN_QUALITY
+            BackstagePass(item).update()
             return
 
         NormalItem(item).update()
