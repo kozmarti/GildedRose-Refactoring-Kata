@@ -72,6 +72,18 @@ class Sulfuras(ItemUpdater):
         pass
 
 
+UPDATERS_BY_NAME = {
+    AGED_BRIE: AgedBrie,
+    BACKSTAGE_PASSES: BackstagePass,
+    SULFURAS: Sulfuras,
+}
+
+
+def updater_for(item):
+    updater_class = UPDATERS_BY_NAME.get(item.name, NormalItem)
+    return updater_class(item)
+
+
 class GildedRose(object):
 
     def __init__(self, items):
@@ -79,22 +91,7 @@ class GildedRose(object):
 
     def update_quality(self):
         for item in self.items:
-            self._update_item(item)
-
-    def _update_item(self, item):
-        if item.name == SULFURAS:
-            Sulfuras(item).update()
-            return
-
-        if item.name == AGED_BRIE:
-            AgedBrie(item).update()
-            return
-
-        if item.name == BACKSTAGE_PASSES:
-            BackstagePass(item).update()
-            return
-
-        NormalItem(item).update()
+            updater_for(item).update()
 
 
 class Item:
