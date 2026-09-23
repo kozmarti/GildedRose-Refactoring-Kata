@@ -3,6 +3,7 @@ from __future__ import annotations
 AGED_BRIE = "Aged Brie"
 BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert"
 SULFURAS = "Sulfuras, Hand of Ragnaros"
+CONJURED_PREFIX = "Conjured"
 
 MIN_QUALITY = 0
 MAX_QUALITY = 50
@@ -72,6 +73,14 @@ class Sulfuras(ItemUpdater):
         pass
 
 
+class Conjured(ItemUpdater):
+    def update_quality(self) -> None:
+        self.decrease_quality(2)
+
+    def update_quality_after_sell_by(self) -> None:
+        self.decrease_quality(2)
+
+
 UPDATERS_BY_NAME: dict[str, type[ItemUpdater]] = {
     AGED_BRIE: AgedBrie,
     BACKSTAGE_PASSES: BackstagePass,
@@ -80,6 +89,8 @@ UPDATERS_BY_NAME: dict[str, type[ItemUpdater]] = {
 
 
 def updater_for(item: Item) -> ItemUpdater:
+    if item.name.startswith(CONJURED_PREFIX):
+        return Conjured(item)
     updater_class = UPDATERS_BY_NAME.get(item.name, NormalItem)
     return updater_class(item)
 

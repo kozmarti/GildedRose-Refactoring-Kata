@@ -100,13 +100,20 @@ class TestBackstagePasses:
 
 
 class TestConjuredItem:
-    # Characterization: Conjured is not implemented yet, so it currently
-    # behaves like a normal item. Will change with the Conjured feature.
-    def test_currently_degrades_like_normal_item(self):
-        assert after_one_day(CONJURED, 5, 10) == (4, 9)
+    def test_degrades_twice_as_fast_as_normal_item(self):
+        assert after_one_day(CONJURED, 5, 10) == (4, 8)
 
-    def test_currently_degrades_like_normal_item_after_sell_by(self):
-        assert after_one_day(CONJURED, 0, 10) == (-1, 8)
+    def test_degrades_twice_as_fast_as_normal_item_after_sell_by(self):
+        assert after_one_day(CONJURED, 0, 10) == (-1, 6)
+
+    def test_quality_is_never_negative(self):
+        assert after_one_day(CONJURED, 5, 1) == (4, 0)
+
+    def test_quality_is_never_negative_after_sell_by(self):
+        assert after_one_day(CONJURED, 0, 3) == (-1, 0)
+
+    def test_any_name_starting_with_conjured_is_conjured(self):
+        assert after_one_day("Conjured Elixir", 5, 10) == (4, 8)
 
 
 def test_updates_every_item():
