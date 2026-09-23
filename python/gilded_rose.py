@@ -67,6 +67,11 @@ class BackstagePass(ItemUpdater):
         self.item.quality = MIN_QUALITY
 
 
+class Sulfuras(ItemUpdater):
+    def update(self):
+        pass
+
+
 class GildedRose(object):
 
     def __init__(self, items):
@@ -78,6 +83,7 @@ class GildedRose(object):
 
     def _update_item(self, item):
         if item.name == SULFURAS:
+            Sulfuras(item).update()
             return
 
         if item.name == AGED_BRIE:
